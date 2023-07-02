@@ -1,10 +1,11 @@
 <?php
 
+use App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\api\user\PostController;
-use App\Http\Controllers;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\api\auth\AuthController;
+use App\Http\Controllers\api\user\PostController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,23 +18,13 @@ use App\Http\Controllers\api\auth\AuthController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
 Route::prefix('/user')->group(function () {
 
-    Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
-
-    Route::get('/index', [PostController::class, 'index']);
-    Route::post('/store', [PostController::class, 'store'])->middleware('auth:sanctum');
-    Route::get('/show/{id}', [PostController::class, 'show']);
-    Route::post('/update/{id}', [PostController::class, 'update'])->middleware('auth:sanctum');
-    Route::get('/delete/{id}', [PostController::class, 'destroy'])->middleware('auth:sanctum');
-
-
-    /**  Resource Route ***/
-    Route::apiResource('posts', PostController::class)->middleware('auth:sanctum');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::apiResource('posts', PostController::class)->middleware('auth:api');
 });

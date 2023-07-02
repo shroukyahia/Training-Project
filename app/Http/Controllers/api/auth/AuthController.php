@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api\auth;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -32,30 +33,53 @@ class AuthController extends Controller
         return response($response, 201);
     }
 
+    /** Login for passport authentication **/
     public function login(Request $request)
     {
-        $fields = $request->validate([
-            'email' => 'required',
-            'password' => 'required|string',
-        ]);
+        $credentials = $request->only('email', 'password');
 
-        $user = User::where('email', $fields['email'])->first();
-        $token = $user->createToken('mytoken')->plainTextToken;
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            $accessToken = $user->createToken('MyApp')->accessToken;
 
-        //check password
-        if (!$user || !Hash::check($fields['password'], $user->password)) {
-
-            return response([
-                'message' => "Wrong Password or Email.",
+            return response()->json([
+                'access_token' => $accessToken,
+                'token_type' => 'Bearer',
+            ]);
+        } else {
+            return response()->json([
+                'error' => 'Unauthorized',
             ], 401);
         }
-
-        $response = [
-            'message' => "Successfully Login.",
-            'user' => $user,
-            'token' => $token
-        ];
-
-        return response($response, 201);
     }
+
+
+
+    /** Login for sanctum authentication **/
+    // public function login(Request $request)
+    // {
+    //     $fields = $request->validate([
+    //         'email' => 'required',
+    //         'password' => 'required|string',
+    //     ]);
+
+    //     $user = User::where('email', $fields['email'])->first();
+    //     $token = $user->createToken('mytoken')->plainTextToken;
+
+    //     //check password
+    //     if (!$user || !Hash::check($fields['password'], $user->password)) {
+
+    //         return response([
+    //             'message' => "Wrong Password or Email.",
+    //         ], 401);
+    //     }
+
+    //     $response = [
+    //         'message' => "Successfully Login.",
+    //         'user' => $user,
+    //         'token' => $token
+    //     ];
+
+    //     return response($response, 201);
+    // }
 }
