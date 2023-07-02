@@ -21,9 +21,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Route::prefix('user')->middleware('auth:sanctum')->group(function (Request $request) {
-//     return $request->user();
-// });
+
 Route::prefix('/user')->group(function () {
 
     Route::post('/login', [AuthController::class, 'login']);
@@ -34,4 +32,8 @@ Route::prefix('/user')->group(function () {
     Route::get('/show/{id}', [PostController::class, 'show']);
     Route::post('/update/{id}', [PostController::class, 'update'])->middleware('auth:sanctum');
     Route::get('/delete/{id}', [PostController::class, 'destroy'])->middleware('auth:sanctum');
+
+
+    /**  Resource Route ***/
+    Route::apiResource('posts', PostController::class)->middleware('auth:sanctum');
 });

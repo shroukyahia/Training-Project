@@ -11,6 +11,17 @@ use Illuminate\Http\Request;
 class PostController extends Controller
 {
 
+    // public function __construct()
+    // {
+    //     $this->middleware('auth:sanctum')->only('store' . 'update', 'destroy');
+    // }
+
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum')->except(['index', 'show']);
+    }
+
+
     public function index()
     {
         $posts = Post::with('user')->select('id', 'title', 'body', 'user_id')->get();
