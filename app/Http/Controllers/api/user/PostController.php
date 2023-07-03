@@ -5,22 +5,16 @@ namespace App\Http\Controllers\api\user;
 use Carbon\Carbon;
 use App\Models\Post;
 use App\Models\User;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
-
-    // public function __construct()
-    // {
-    //     $this->middleware('auth:sanctum')->only('store' . 'update', 'destroy');
-    // }
-
     public function __construct()
     {
         $this->middleware('auth:api')->except(['index', 'show']);
     }
-
 
     public function index()
     {
@@ -41,8 +35,9 @@ class PostController extends Controller
                 'body' => 'required|string',
             ]
         );
-        if ($request->file('file')) {
-            $image_path = $request->file('file')->store('api/post', 'public');
+        $file = $request->file('file');
+        if ($file) {
+            $image_path = Storage::putFile('posts', $file);
         } else {
             $image_path = null;
         }
@@ -72,7 +67,8 @@ class PostController extends Controller
         ];
         return response($response, 201);
     }
-    public function update(Request $request, string $id)
+
+    public function update(Request $request,  $id)
     {
         $post = Post::find($id);
         if ($request->user()->id == $post->user_id) {
@@ -82,8 +78,9 @@ class PostController extends Controller
                     'body' => 'required|string',
                 ]
             );
-            if ($request->file('file')) {
-                $image_path = $request->file('file')->store('api/post', 'public');
+            $file = $request->file('file');
+            if ($file) {
+                $image_path = Storage::putFile('posts', $file);
             } else {
                 $image_path = null;
             }
@@ -108,7 +105,8 @@ class PostController extends Controller
 
         return response($response, 201);
     }
-    public function destroy(Request $request, string $id)
+
+    public function destroy(Request $request, $id)
     {
         $post = Post::findOrFail($id);
         if ($post->user_id == $request->user()->id) {
