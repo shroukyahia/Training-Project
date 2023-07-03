@@ -67,6 +67,15 @@ class PostController extends Controller
         ];
         return response($response, 201);
     }
+    public function showLatestPosts()
+    {
+        $posts = Post::with('user')->select('id', 'title', 'body', 'user_id')->latest()->paginate(5);
+        $response = [
+            'message' => 'show latest posts.',
+            'result' => $posts,
+        ];
+        return response($response, 201);
+    }
 
     public function update(Request $request,  $id)
     {

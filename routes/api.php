@@ -26,5 +26,7 @@ Route::prefix('/user')->group(function () {
 
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/showlatest', [PostController::class, 'showLatestPosts']);
+
     Route::apiResource('posts', PostController::class)->middleware('auth:api');
 });
