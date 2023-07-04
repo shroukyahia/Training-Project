@@ -13,12 +13,12 @@ class PostController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api')->except(['index', 'show']);
+        $this->middleware('auth:api')->except(['index', 'show', 'showLatestPosts']);
     }
 
     public function index()
     {
-        $posts = Post::with('user')->select('id', 'title', 'body', 'user_id')->get();
+        $posts = Post::with('user')->select('id', 'title', 'body', 'user_id')->paginate(5);
         $response = [
             'message' => 'All posts that have been created.',
             'result' => $posts,
@@ -69,7 +69,7 @@ class PostController extends Controller
     }
     public function showLatestPosts()
     {
-        $posts = Post::with('user')->select('id', 'title', 'body', 'user_id')->latest()->paginate(5);
+        $posts = Post::with('user')->select('id', 'title', 'body', 'user_id')->latest()->take(5)->get();
         $response = [
             'message' => 'show latest posts.',
             'result' => $posts,
